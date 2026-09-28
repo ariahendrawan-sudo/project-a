@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: bounty-filter-validator
+        name: Bounty Filter Validator
+        entry: scripts/bounty_filters.py --bounties
+        language: system
+        files: ^bounties/.*\.json$
+        args: ["--bounties", "{{filename}}"]
+        stages: [commit]
