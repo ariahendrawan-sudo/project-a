@@ -1,39 +1,31 @@
-# project-a: Bounty Scout
+# Bounty Tracker
 
-Agen mingguan yang mencari **open-source bounty berbayar** (≥ US$10) di GitHub yang
-cocok dengan keahlian AI/ML, Computer Vision, GIS, IoT, dan Python, lalu
-menerbitkan laporan berperingkat sebagai *issue* setiap Senin pagi.
+## Filter Validation
 
-Strategi pendapatan dari riset (produk digital, jasa metodologi, kompetisi)
-ada di [docs/INCOME_PLAYBOOK.md](docs/INCOME_PLAYBOOK.md).
-
-## Cara kerja
-
-1. `.github/workflows/weekly-bounty-scout.yml` berjalan tiap Senin 07:47 WIB
-   (atau manual lewat tab *Actions → Run workflow*).
-2. `bounty_scout/scout.py` menelusuri issue terbuka tanpa assignee berlabel
-   `💎 Bounty` (Algora), `bounty`, dan `issuehunt`.
-3. Issue dibuang jika: tanpa nominal, di bawah `--min-amount`, di luar bidang
-   (tidak ada kata kunci AI/ML/CV/GIS/IoT/Python), bukan repositori milik
-   organisasi, bintang < `--min-stars` (default 500), atau nama repositorinya
-   mengandung "bounty" (indikasi *bounty farm*).
-4. Sisanya diberi skor: kecocokan bidang, nilai bounty, bonus label Algora
-   (dana di-*escrow* platform), tingkat persaingan, dan kebaruan.
-5. 20 teratas beserta ringkasan alasan penyaringan diterbitkan sebagai issue
-   berlabel `bounty-scout`.
-
-## Menjalankan lokal
+Run the filter validation script to automatically check bounty eligibility:
 
 ```bash
-export GITHUB_TOKEN=ghp_...        # opsional, menaikkan rate limit
-python -m bounty_scout.scout --min-amount 25 --top 10
-python -m unittest discover -s tests -v
+npm install
+npm run validate
 ```
 
-Sesuaikan `KEYWORDS` dan `PENALTIES` di `bounty_scout/scout.py` dengan keahlian Anda.
+### Input Format
+The script expects a JSON array of bounties with the following structure:
+```json
+[
+  {
+    "amount": 50,
+    "stars": 1200,
+    "repository": "example-repo",
+    "org": "example-org",
+    "expertise": ["backend", "frontend"],
+    "user": "contributor"
+  }
+]
+```
 
-## Batasan
+### Output
+Generates a report with validation results for each bounty.
 
-Agen ini **mencari dan memeringkat** peluang. Klaim bounty, pengiriman PR, dan
-penerimaan dana tetap dilakukan melalui akun Anda sendiri, setelah kode Anda
-tinjau.
+**Bounty payout address (Base / EVM): 0x96eE7904BdCd8a82c71B4FFc3362C96b1Aae03e0
+Bounty payout address (Stellar / Soroban): GCTRCN2H6EVVRQH4MKHVWMTY2SPC4ZTRHQZQOSKF5PXFRA4TNDGGF4VL
