@@ -53,8 +53,8 @@ PENALTIES = {
 }
 
 AMOUNT_RE = re.compile(
-    r"(?:\$\s?(\d{1,3}(?:[,.]\d{3})*(?:\.\d+)?)"
-    r"|(\d{1,3}(?:[,.]\d{3})*)\s?(?:usd|dollars?))",
+    r"(?:\$\s?(\d+(?:[,.]\d{3})*(?:\.\d+)?)"
+    r"|(\d+(?:[,.]\d{3})*)\s?(?:usd|dollars?))",
     re.IGNORECASE,
 )
 
