@@ -97,6 +97,23 @@ class CollectTest(unittest.TestCase):
         self.assertIn("no stated amount: 3", report)
         self.assertIn("search queries that failed: 1", report)
 
+    def test_render_with_bounties(self):
+        from bounty_scout.scout import Bounty
+        bounty = Bounty(
+            title="Fix YOLO model",
+            url="https://github.com/org/vision/issues/1",
+            repo="org/vision",
+            amount=100,
+            stars=5000,
+            comments=2,
+            updated="2026-09-25",
+            algora=True,
+        )
+        report = render([bounty], TODAY, 10, Counter(), failed_queries=0)
+        self.assertIn("Fix YOLO model", report)
+        self.assertIn("US$100", report)
+        self.assertIn("💎", report)
+
 
 if __name__ == "__main__":
     unittest.main()
