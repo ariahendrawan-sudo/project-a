@@ -37,3 +37,28 @@ Sesuaikan `KEYWORDS` dan `PENALTIES` di `bounty_scout/scout.py` dengan keahlian 
 Agen ini **mencari dan memeringkat** peluang. Klaim bounty, pengiriman PR, dan
 penerimaan dana tetap dilakukan melalui akun Anda sendiri, setelah kode Anda
 tinjau.
+
+
+---
+<!-- Fix for #15 -->
+# project-a
+
+## Installation
+
+```bash
+npm install
+```
+
+## Usage
+
+```javascript
+const { createClient } = require('./src');
+const client = createClient({ apiKey: process.env.API_KEY });
+const result = await client.process('input');
+console.log(result);
+```
+
+## Contributing
+
+Pull requests are welcome. Ensure tests pass with `npm test` before submitting.
+
