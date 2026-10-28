@@ -7,6 +7,28 @@ menerbitkan laporan berperingkat sebagai *issue* setiap Senin pagi.
 Strategi pendapatan dari riset (produk digital, jasa metodologi, kompetisi)
 ada di [docs/INCOME_PLAYBOOK.md](docs/INCOME_PLAYBOOK.md).
 
+# Bounty Scout — week of 2026-10-26
+Target: at least US$10/week. One merged bounty of US$50 covers ~5 weeks.
+
+| # | Score | Amount | Stars | Comments | Repository | Issue |
+|---|------:|-------:|------:|---------:|------------|-------|
+| – | – | – | – | – | – | No bounty passed the filters this week |
+
+## Filtered out
+- no stated amount: 79
+- bounty-farm repository: 57
+- outside expertise: 39
+- below minimum amount: 14
+- not an organisation repo: 9
+- fewer than 500 stars: 2
+
+## Before claiming
+- Read the repo's CONTRIBUTING and bounty rules; many ban low-effort or unreviewed AI-generated PRs.
+- Check nobody is already assigned or has an open PR (comment count is a proxy only).
+- Prefer 💎 Algora bounties: the payout is escrowed by the platform.
+- Comment to claim (e.g. `/attempt` on Algora) only when you can deliver within a week.
+- Payouts go to your own Algora/IssueHunt/Stripe account; declare the income for tax.
+
 ## Cara kerja
 
 1. `.github/workflows/weekly-bounty-scout.yml` berjalan tiap Senin 07:47 WIB
@@ -23,17 +45,3 @@ ada di [docs/INCOME_PLAYBOOK.md](docs/INCOME_PLAYBOOK.md).
    berlabel `bounty-scout`.
 
 ## Menjalankan lokal
-
-```bash
-export GITHUB_TOKEN=ghp_...        # opsional, menaikkan rate limit
-python -m bounty_scout.scout --min-amount 25 --top 10
-python -m unittest discover -s tests -v
-```
-
-Sesuaikan `KEYWORDS` dan `PENALTIES` di `bounty_scout/scout.py` dengan keahlian Anda.
-
-## Batasan
-
-Agen ini **mencari dan memeringkat** peluang. Klaim bounty, pengiriman PR, dan
-penerimaan dana tetap dilakukan melalui akun Anda sendiri, setelah kode Anda
-tinjau.
