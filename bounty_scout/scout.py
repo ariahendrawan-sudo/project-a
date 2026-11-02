@@ -35,6 +35,16 @@ QUERIES = [
     'label:"issuehunt" state:open is:issue no:assignee',
 ]
 
+# GitHub Topics to search for (repository-level topics that indicate bounty-friendly repos)
+TOPIC_QUERIES = [
+    'topic:bounty state:open is:issue no:assignee',
+    'topic:hacktoberfest state:open is:issue no:assignee',
+    'topic:"good-first-issue" state:open is:issue no:assignee',
+    'topic:"help-wanted" state:open is:issue no:assignee',
+    'topic:issuehunt state:open is:issue no:assignee',
+    'topic:algora state:open is:issue no:assignee',
+]
+
 # Domain keywords (matched as whole words). At least one must appear.
 KEYWORDS = {
     "machine learning": 3, "deep learning": 3, "computer vision": 3,
@@ -264,7 +274,8 @@ def main(argv: list[str] | None = None) -> int:
     token = os.environ.get("GITHUB_TOKEN")
     items: list[dict] = []
     failed = 0
-    for i, query in enumerate(QUERIES):
+    all_queries = QUERIES + TOPIC_QUERIES
+    for i, query in enumerate(all_queries):
         if i:
             time.sleep(10)  # the search API allows few requests per minute
         try:
