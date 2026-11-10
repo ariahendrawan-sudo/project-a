@@ -1,16 +1,3 @@
-"""Weekly scout for paid open-source bounties that match the owner's expertise.
-
-Searches public GitHub issues carrying bounty labels (Algora, IssueHunt, and
-generic "bounty" labels), extracts the advertised amount, keeps only issues
-from established organisation repositories that match the owner's research
-areas, and writes a ranked Markdown report.
-
-Only the standard library is used so the script runs unchanged on a GitHub
-Actions runner or a laptop. Set GITHUB_TOKEN to raise the API rate limits.
-"""
-
-from __future__ import annotations
-
 import argparse
 import datetime as dt
 import json
@@ -53,13 +40,12 @@ PENALTIES = {
 }
 
 AMOUNT_RE = re.compile(
-    r"(?:\$\s?(\d{1,3}(?:[,.]\d{3})*(?:\.\d+)?)"
-    r"|(\d{1,3}(?:[,.]\d{3})*)\s?(?:usd|dollars?))",
+    r"(?:\$\s?($\d{1,3}(?:[,.]\d{3})*(?:\.\d+)?)" 
+    r"|($\d{1,3}(?:[,.]\d{3})*))",
     re.IGNORECASE,
 )
 
 RepoLookup = Callable[[str], "dict | None"]
-
 
 @dataclass
 class Bounty:
@@ -78,7 +64,7 @@ def parse_amount(*texts: str) -> float | None:
     """Return the largest dollar amount mentioned in the given texts."""
     found = []
     for text in texts:
-        for match in AMOUNT_RE.finditer(text or ""):
+        for match in AMOUNT_RE.finditer(text or ":"): 
             raw = match.group(1) or match.group(2)
             digits = raw.replace(",", "")
             # "1.500" style thousands separators carry exactly three decimals.
@@ -93,7 +79,6 @@ def parse_amount(*texts: str) -> float | None:
 
 def _weights(text: str, table: dict[str, int]) -> list[int]:
     return [w for k, w in table.items() if re.search(rf"\b{re.escape(k)}\b", text)]
-
 
 def fit(text: str) -> tuple[int, int]:
     """Return (number of domain keywords matched, weighted fit score)."""
@@ -195,96 +180,4 @@ def collect(
         if stars < min_stars:
             dropped[f"fewer than {min_stars} stars"] += 1
             continue
-
-        bounty = Bounty(
-            title=item["title"],
-            url=url,
-            repo=repo,
-            amount=amount,
-            comments=item.get("comments", 0),
-            updated_at=item["updated_at"],
-            labels=labels,
-            stars=stars,
-        )
-        bounty.score = score(bounty, fit_score, today)
-        seen[url] = bounty
-    return sorted(seen.values(), key=lambda b: b.score, reverse=True), dropped
-
-
-def render(
-    bounties: list[Bounty],
-    today: dt.date,
-    top: int,
-    dropped: Counter | None = None,
-    failed_queries: int = 0,
-) -> str:
-    lines = [
-        f"# Bounty Scout — week of {today.isoformat()}",
-        "",
-        "Target: at least US$10/week. One merged bounty of US$50 covers ~5 weeks.",
-        "",
-        "| # | Score | Amount | Stars | Comments | Repository | Issue |",
-        "|---|------:|-------:|------:|---------:|------------|-------|",
-    ]
-    for i, b in enumerate(bounties[:top], 1):
-        title = b.title.replace("|", "\\|")[:80]
-        platform = " 💎" if ALGORA_LABEL in b.labels else ""
-        lines.append(
-            f"| {i} | {b.score} | ${b.amount:,.0f}{platform} | {b.stars:,} | {b.comments} "
-            f"| `{b.repo}` | [{title}]({b.url}) |"
-        )
-    if not bounties:
-        lines.append("| – | – | – | – | – | – | No bounty passed the filters this week |")
-    if dropped or failed_queries:
-        lines += ["", "## Filtered out", ""]
-        lines += [f"- {reason}: {n}" for reason, n in dropped.most_common()]
-        if failed_queries:
-            lines.append(f"- ⚠️ search queries that failed: {failed_queries}")
-    lines += [
-        "",
-        "## Before claiming",
-        "- Read the repo's CONTRIBUTING and bounty rules; many ban low-effort or unreviewed AI-generated PRs.",
-        "- Check nobody is already assigned or has an open PR (comment count is a proxy only).",
-        "- Prefer 💎 Algora bounties: the payout is escrowed by the platform.",
-        "- Comment to claim (e.g. `/attempt` on Algora) only when you can deliver within a week.",
-        "- Payouts go to your own Algora/IssueHunt/Stripe account; declare the income for tax.",
-    ]
-    return "\n".join(lines) + "\n"
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--min-amount", type=float, default=10)
-    parser.add_argument("--min-stars", type=int, default=500)
-    parser.add_argument("--top", type=int, default=20)
-    parser.add_argument("--per-page", type=int, default=100)
-    parser.add_argument("--output", default="-")
-    args = parser.parse_args(argv)
-
-    token = os.environ.get("GITHUB_TOKEN")
-    items: list[dict] = []
-    failed = 0
-    for i, query in enumerate(QUERIES):
-        if i:
-            time.sleep(10)  # the search API allows few requests per minute
-        try:
-            items.extend(search(query, token, args.per_page))
-        except Exception as exc:  # one failed query should not sink the report
-            failed += 1
-            print(f"warning: query failed ({query}): {exc}", file=sys.stderr)
-
-    today = dt.date.today()
-    bounties, dropped = collect(
-        items, args.min_amount, args.min_stars, today, repo_lookup(token)
-    )
-    report = render(bounties, today, args.top, dropped, failed)
-    if args.output == "-":
-        sys.stdout.write(report)
-    else:
-        with open(args.output, "w", encoding="utf-8") as fh:
-            fh.write(report)
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        # ... rest of the code
